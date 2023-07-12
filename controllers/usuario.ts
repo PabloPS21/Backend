@@ -73,29 +73,25 @@ export const registrarUsuario =  async (req: Request, res: Response) => {
 
 //Loggear usuario
 export const loginUsuario =  async (req: Request, res: Response) => {
-    const { username, email, contraseña } = req.body;
+    const { username, contraseña } = req.body;
 
     //Validar credenciales
-    const existeUsuario: any = await Usuario.findOne({where:{username: username}});
-    const existeEmailUsuario = await Usuario.findOne({where:{email: email}});
+    const usuario: any = await Usuario.findOne({where:{username: username}});
 
-    if(!existeUsuario) {
-        return res.status(400).json({ msg: "Usuario no encontrado" });
-    }
-    if(!existeEmailUsuario) {
-        return res.status(400).json({ msg: "Correo incorrecto" });
+    if(!usuario) {
+        return res.status(400).json({ msg: "User not found" });
     }
 
 
     //Comprobar contraseña hasheada con la que manda el usuario
-    const contraseñaValida = await bcrypt.compare(contraseña, existeUsuario.contraseña)
+    const contraseñaValida = await bcrypt.compare(contraseña, usuario.contraseña)
 
     if(!contraseñaValida) {
-        return res.status(400).json({ msg: "Contraseña incorrecta" });
+        return res.status(400).json({ msg: "Incorrect password" });
     }
 
     // Obtener el ID del usuario
-    const id = existeUsuario.id;
+    const id = usuario.id;
 
     //Una vez el usuario se ha validado, generamos el token jwt
     const token = jwt.sign({
@@ -103,7 +99,7 @@ export const loginUsuario =  async (req: Request, res: Response) => {
         id: id,
     }, process.env.JWT_KEY || 'supersecretkey',);
 
-    res.json({existeUsuario, token});
+    res.json({usuario, token});
 }
 
 
@@ -137,7 +133,7 @@ export const getUserGames = async (req: Request, res: Response) => {
             return res.status(404).json({ message: "Usuario no encontrado" });
         }
 
-    const game = await Game.findOne({where:{id_usuario: id}});
+    const games = await Game.findAll({where:{id_usuario: id}});
 
-    res.json(game);
+    res.json(games);
 }

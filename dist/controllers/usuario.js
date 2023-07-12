@@ -69,29 +69,25 @@ const registrarUsuario = (req, res) => __awaiter(void 0, void 0, void 0, functio
 exports.registrarUsuario = registrarUsuario;
 //Loggear usuario
 const loginUsuario = (req, res) => __awaiter(void 0, void 0, void 0, function* () {
-    const { username, email, contraseña } = req.body;
+    const { username, contraseña } = req.body;
     //Validar credenciales
-    const existeUsuario = yield usuario_1.default.findOne({ where: { username: username } });
-    const existeEmailUsuario = yield usuario_1.default.findOne({ where: { email: email } });
-    if (!existeUsuario) {
-        return res.status(400).json({ msg: "Usuario no encontrado" });
-    }
-    if (!existeEmailUsuario) {
-        return res.status(400).json({ msg: "Correo incorrecto" });
+    const usuario = yield usuario_1.default.findOne({ where: { username: username } });
+    if (!usuario) {
+        return res.status(400).json({ msg: "User not found" });
     }
     //Comprobar contraseña hasheada con la que manda el usuario
-    const contraseñaValida = yield bcrypt_1.default.compare(contraseña, existeUsuario.contraseña);
+    const contraseñaValida = yield bcrypt_1.default.compare(contraseña, usuario.contraseña);
     if (!contraseñaValida) {
-        return res.status(400).json({ msg: "Contraseña incorrecta" });
+        return res.status(400).json({ msg: "Incorrect password" });
     }
     // Obtener el ID del usuario
-    const id = existeUsuario.id;
+    const id = usuario.id;
     //Una vez el usuario se ha validado, generamos el token jwt
     const token = jsonwebtoken_1.default.sign({
         username: username,
         id: id,
     }, process.env.JWT_KEY || 'supersecretkey');
-    res.json({ existeUsuario, token });
+    res.json({ usuario, token });
 });
 exports.loginUsuario = loginUsuario;
 //Elimina usuario
@@ -114,8 +110,8 @@ const getUserGames = (req, res) => __awaiter(void 0, void 0, void 0, function* (
     if (!usuario) {
         return res.status(404).json({ message: "Usuario no encontrado" });
     }
-    const game = yield games_1.default.findOne({ where: { id_usuario: id } });
-    res.json(game);
+    const games = yield games_1.default.findAll({ where: { id_usuario: id } });
+    res.json(games);
 });
 exports.getUserGames = getUserGames;
 //# sourceMappingURL=usuario.js.map

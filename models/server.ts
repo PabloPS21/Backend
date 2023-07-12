@@ -20,23 +20,24 @@ class Server {
 
     constructor() {
         this.app = express();
-        this.port = process.env.PORT || '8000';
+        this.port = '8000';
 
         this.databaseConnection();
 
         this.transformaciones();
 
         this.routes();
-        
+               
     }
 
+    //Conexión a la base de datos
     async databaseConnection(){
 
         try{
 
             //Conexión con los modelos a la base de datos
             await Usuario.sync();
-            await Game.sync();
+            await Game.sync({ alter: true });       //"alter: force" para hacer que la base de datos se borre y se vuelva a crear       
             console.log("Conectado a la base de datos");
 
         } catch (error) {
@@ -53,11 +54,14 @@ class Server {
     //Método que se ejecuta antes de que se usen las rutas
     transformaciones(){
         
-        //Acceder al body
-        this.app.use(cors());
-
-        //Parsear el body
+        // Parsear el body
         this.app.use(express.json());
+
+        // Acceder al body y habilitar CORS
+        this.app.use(cors({
+        origin: 'http://localhost:4200',
+        credentials: true
+        }));
     }
 
 

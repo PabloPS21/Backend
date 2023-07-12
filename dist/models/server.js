@@ -26,17 +26,18 @@ class Server {
             games: '/api/games'
         };
         this.app = (0, express_1.default)();
-        this.port = process.env.PORT || '8000';
+        this.port = '8000';
         this.databaseConnection();
         this.transformaciones();
         this.routes();
     }
+    //Conexión a la base de datos
     databaseConnection() {
         return __awaiter(this, void 0, void 0, function* () {
             try {
                 //Conexión con los modelos a la base de datos
                 yield usuario_2.default.sync();
-                yield games_1.default.sync();
+                yield games_1.default.sync({ alter: true }); //"alter: force" para hacer que la base de datos se borre y se vuelva a crear       
                 console.log("Conectado a la base de datos");
             }
             catch (error) {
@@ -51,10 +52,13 @@ class Server {
     }
     //Método que se ejecuta antes de que se usen las rutas
     transformaciones() {
-        //Acceder al body
-        this.app.use((0, cors_1.default)());
-        //Parsear el body
+        // Parsear el body
         this.app.use(express_1.default.json());
+        // Acceder al body y habilitar CORS
+        this.app.use((0, cors_1.default)({
+            origin: 'http://localhost:4200',
+            credentials: true
+        }));
     }
     //Método listen
     listen() {

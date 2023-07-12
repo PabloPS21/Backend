@@ -11,7 +11,7 @@ userRouter.post("/", registrarUsuario);
 userRouter.post("/login", loginUsuario);
 userRouter.delete("/:id", deleteUsuario);
 
-userRouter.get("/:id/games", tokenValidacion, getUserGames);
+userRouter.get("/:id/games", tokenValidacion, getUserGames); // Para poder ejecutar getUserGames tendrá primero que verificar el token
 
 
 export default userRouter;

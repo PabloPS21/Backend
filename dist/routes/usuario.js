@@ -13,6 +13,6 @@ userRouter.get("/:id", usuario_1.getUsuario);
 userRouter.post("/", usuario_1.registrarUsuario);
 userRouter.post("/login", usuario_1.loginUsuario);
 userRouter.delete("/:id", usuario_1.deleteUsuario);
-userRouter.get("/:id/games", tokenValidacion_1.default, usuario_1.getUserGames);
+userRouter.get("/:id/games", tokenValidacion_1.default, usuario_1.getUserGames); // Para poder ejecutar getUserGames tendrá primero que verificar el token
 exports.default = userRouter;
 //# sourceMappingURL=usuario.js.map

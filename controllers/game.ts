@@ -29,7 +29,7 @@ export const getGame = async(req: Request, res: Response) => {
 export const registrarJuego =  async (req: Request, res: Response) => {
     
     try {
-        const { id_usuario, nombre, estado} = req.body;
+        const { id_usuario, nombre, estado, urlImage} = req.body;
 
         var fechaInicio = null;
         var fechaFin = null;
@@ -52,15 +52,17 @@ export const registrarJuego =  async (req: Request, res: Response) => {
         switch(estado){
           case 'Jugando': fechaInicio = Date.now(); break;
           case 'Finalizado': fechaInicio = Date.now(); fechaFin = Date.now(); break;
+          case 'Pendiente': fechaInicio = null; fechaFin = null; break;
         }
         
         // Crear el nuevo juego si no existe duplicado
         const nuevoJuego = await Game.create({
           id_usuario: id_usuario,
           nombre: nombre,
-          estado: estado,
+          estado: estado,     
           fechaInicio: fechaInicio,
-          fechaFin: fechaFin
+          fechaFin: fechaFin,
+          urlImage: urlImage
         });
     
         return res.status(201).json(nuevoJuego);
@@ -71,6 +73,7 @@ export const registrarJuego =  async (req: Request, res: Response) => {
       }
 }
 
+// Eliminar juego
 export const eliminarJuego = async (req: Request, res: Response) => {
     try {
       
@@ -93,7 +96,7 @@ export const eliminarJuego = async (req: Request, res: Response) => {
     }
 };
 
-//TODO: modificar el juego (las fechas)
+// Modificar el estado, la fecha de inicio y la fecha de final
 export const modificarJuego = async (req: Request, res: Response) => {
 
   const { id } = req.params;
@@ -104,11 +107,12 @@ export const modificarJuego = async (req: Request, res: Response) => {
     return res.status(404).json({ error: 'Juego no encontrado.' });
   }
 
-  const {fechaInicio, fechaFin } = req.body;
+  const {fechaInicio, fechaFin, estado } = req.body;
 
   //Modificamos los valores
   game.fechaInicio = fechaInicio;
   game.fechaFin = fechaFin;
+  game.estado = estado;
 
   //Guardamos
   await game.save();

@@ -4,7 +4,7 @@ import Usuario from './usuario';
 
 const Game = db.define('Game', {
     
-    id: {
+      id: {
         type: DataTypes.INTEGER,
         primaryKey: true,
         autoIncrement: true,
@@ -29,11 +29,14 @@ const Game = db.define('Game', {
         type: DataTypes.ENUM('Pendiente', 'Jugando', 'Finalizado'),
         allowNull: false,
       },
+      urlImage: {
+        type: DataTypes.STRING,
+        allowNull: true
+      }
 
-      //TODO: Añadir URL imagen
 })
 
-Game.belongsTo(Usuario, {foreignKey: 'id_usuario'});
+//Game.belongsTo(Usuario, {foreignKey: 'id_usuario', onDelete: 'CASCADE'});
 
 
 export default Game;

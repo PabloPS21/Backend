@@ -35,7 +35,7 @@ exports.getGame = getGame;
 //Registrar juego
 const registrarJuego = (req, res) => __awaiter(void 0, void 0, void 0, function* () {
     try {
-        const { id_usuario, nombre, estado } = req.body;
+        const { id_usuario, nombre, estado, urlImage } = req.body;
         var fechaInicio = null;
         var fechaFin = null;
         // Verificar si el juego ya está registrado para el usuario
@@ -57,6 +57,10 @@ const registrarJuego = (req, res) => __awaiter(void 0, void 0, void 0, function*
                 fechaInicio = Date.now();
                 fechaFin = Date.now();
                 break;
+            case 'Pendiente':
+                fechaInicio = null;
+                fechaFin = null;
+                break;
         }
         // Crear el nuevo juego si no existe duplicado
         const nuevoJuego = yield games_1.default.create({
@@ -64,7 +68,8 @@ const registrarJuego = (req, res) => __awaiter(void 0, void 0, void 0, function*
             nombre: nombre,
             estado: estado,
             fechaInicio: fechaInicio,
-            fechaFin: fechaFin
+            fechaFin: fechaFin,
+            urlImage: urlImage
         });
         return res.status(201).json(nuevoJuego);
     }
@@ -74,6 +79,7 @@ const registrarJuego = (req, res) => __awaiter(void 0, void 0, void 0, function*
     }
 });
 exports.registrarJuego = registrarJuego;
+// Eliminar juego
 const eliminarJuego = (req, res) => __awaiter(void 0, void 0, void 0, function* () {
     try {
         const { id } = req.params;
@@ -91,17 +97,18 @@ const eliminarJuego = (req, res) => __awaiter(void 0, void 0, void 0, function* 
     }
 });
 exports.eliminarJuego = eliminarJuego;
-//TODO: modificar el juego (las fechas)
+// Modificar el estado, la fecha de inicio y la fecha de final
 const modificarJuego = (req, res) => __awaiter(void 0, void 0, void 0, function* () {
     const { id } = req.params;
     const game = yield games_1.default.findByPk(id);
     if (!game) {
         return res.status(404).json({ error: 'Juego no encontrado.' });
     }
-    const { fechaInicio, fechaFin } = req.body;
+    const { fechaInicio, fechaFin, estado } = req.body;
     //Modificamos los valores
     game.fechaInicio = fechaInicio;
     game.fechaFin = fechaFin;
+    game.estado = estado;
     //Guardamos
     yield game.save();
     return res.json({ message: 'Juego actualizado correctamente.' });
